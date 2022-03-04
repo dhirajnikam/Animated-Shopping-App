@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 class My_cartL extends ChangeNotifier {
   List<Product> _cart = [];
   double T_price = 0;
-  void add(Product product) {
+  void addToCart(Product product) {
     _cart.add(product);
     T_price += product.price;
     notifyListeners();
   }
 
-  void remove(Product product) {
+  void removeFromCart(Product product) {
     _cart.remove(product);
     T_price -= product.price;
     notifyListeners();

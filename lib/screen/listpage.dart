@@ -1,10 +1,11 @@
-import 'package:a/cart/my_cart.dart';
 import 'package:a/data/list.dart';
-import 'package:a/models/cart.dart';
+import 'package:a/provider/cart.dart';
 import 'package:a/page_Animation/page_Animation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'cart/my_cart.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({Key? key}) : super(key: key);
@@ -150,17 +151,9 @@ class _ListPageState extends State<ListPage> {
                           width: 50,
                           child: Image(image: AssetImage('assets/nike_b.png')),
                         ),
-                        Container(
-                            // height: 50,
-                            // width: 50,
-                            // decoration: BoxDecoration(
-                            //     borderRadius: BorderRadius.circular(30),
-                            //     border:
-                            //         Border.all(width: 5, color: Colors.white),
-                            //     color: Colors.black),
-                            child: Icon(
+                        Icon(
                           Icons.search_rounded,
-                        ))
+                        )
                       ],
                     ),
                     SizedBox(
@@ -224,7 +217,9 @@ class _ListPageState extends State<ListPage> {
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                Provider.of<My_cartL>(context, listen: false).add(product[index]);
+                                                context
+                                                    .read<My_cartL>()
+                                                    .addToCart(product[index]);
                                               },
                                               child: Icon(
                                                   Icons.shopping_bag_outlined),
@@ -237,7 +232,11 @@ class _ListPageState extends State<ListPage> {
                                             Container(
                                               height: 100,
                                               width: 100,
-                                              color: product[index].color,
+                                              decoration: BoxDecoration(
+                                                    color: product[index].color,
+                                                    borderRadius: BorderRadius.circular(15)
+                                              ),
+                                            
                                             ),
                                             Container(
                                               child: Image(
@@ -265,24 +264,5 @@ class _ListPageState extends State<ListPage> {
         ],
       ),
     );
-  }
-
-  _removeItem(index) {
-    setState(() {
-      //  addcol.remove(addcol[index]);
-    });
-  }
-
-  _addItem(index) {
-    Provider.of<My_cartL>(context, listen: false).cart.add(product[index]);
-    // if (addcol.contains(col[index])) {
-    //   print("Already available ${col[index]}");
-    // } else {
-    //   setState(() {
-    //     addcol.add(col[index]);
-    //     addImg.add(img[index]);
-    //     addText.add(double.parse(t_Text[index]));
-    //   });
-    // }
   }
 }

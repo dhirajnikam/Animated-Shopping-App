@@ -1,6 +1,5 @@
-import 'package:a/data/list.dart';
-import 'package:a/models/cart.dart';
-import 'package:a/models/product.dart';
+import 'package:a/provider/cart.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,12 +11,6 @@ class My_Cart extends StatefulWidget {
 }
 
 class _My_CartState extends State<My_Cart> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
@@ -85,61 +78,48 @@ class _My_CartState extends State<My_Cart> {
                         margin: EdgeInsets.only(top: 10),
                         height: 100,
                         decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: Colors.white)),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              //border: Border.all(color: Colors.white)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          padding: const EdgeInsets.all(5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        height: 70,
-                                        width: 70,
-                                        decoration: BoxDecoration(
-                                            color: bloc.cart[index].color,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      Container(
-                                        height: 80,
-                                        width: 80,
-                                        child: Image(
-                                            image: AssetImage(
-                                                bloc.cart[index].img)),
-                                      ),
-                                    ],
+                                  Container(
+                                    height: 70,
+                                    width: 70,
+                                    decoration: BoxDecoration(
+                                        color: bloc.cart[index].color,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                   ),
-                                  Text(bloc.cart[index].title),
-                                  Text(bloc.cart[index].price.toString()),
-                                  GestureDetector(
-                                    onTap: () {
-                                      context
-                                          .read<My_cartL>()
-                                          .remove(bloc.cart[index]);
-                                    },
-                                    child: Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.red,
-                                    ),
-                                  )
-
-                                  // Icon(Icons.delete_outline,color: Colors.red,)
+                                  Container(
+                                    height: 80,
+                                    width: 80,
+                                    child: Image(
+                                        image:
+                                            AssetImage(bloc.cart[index].img)),
+                                  ),
                                 ],
                               ),
-                            ),
+                              Text(bloc.cart[index].title),
+                              Text("Price ${bloc.cart[index].price.toString()}"),
+                              GestureDetector(
+                                onTap: () {
+                                  context
+                                      .read<My_cartL>()
+                                      .removeFromCart(bloc.cart[index]);
+                                },
+                                child: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       );
@@ -147,7 +127,7 @@ class _My_CartState extends State<My_Cart> {
               ),
               Container(
                 child: Text(
-                  "Total ${bloc.totalprice}",
+                  "Total Prices ${bloc.totalprice}",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
