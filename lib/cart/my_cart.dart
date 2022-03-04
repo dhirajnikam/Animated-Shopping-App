@@ -1,5 +1,8 @@
-import 'package:a/list/list.dart';
+import 'package:a/data/list.dart';
+import 'package:a/models/cart.dart';
+import 'package:a/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class My_Cart extends StatefulWidget {
   const My_Cart({Key? key}) : super(key: key);
@@ -13,17 +16,13 @@ class _My_CartState extends State<My_Cart> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    total;
-    addImg;
-    addcol;
-    addText;
-    remove;
   }
 
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
+    var bloc = Provider.of<My_cartL>(context);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -69,7 +68,7 @@ class _My_CartState extends State<My_Cart> {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "My Cart ${addImg.length}",
+                    "My Cart ${bloc.count}",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -80,7 +79,7 @@ class _My_CartState extends State<My_Cart> {
               ),
               Expanded(
                 child: ListView.builder(
-                    itemCount: addImg.length,
+                    itemCount: bloc.count,
                     itemBuilder: ((context, index) {
                       return Container(
                         margin: EdgeInsets.only(top: 10),
@@ -110,7 +109,7 @@ class _My_CartState extends State<My_Cart> {
                                         height: 70,
                                         width: 70,
                                         decoration: BoxDecoration(
-                                            color: addcol[index],
+                                            color: bloc.cart[index].color,
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                       ),
@@ -119,11 +118,23 @@ class _My_CartState extends State<My_Cart> {
                                         width: 80,
                                         child: Image(
                                             image: AssetImage(
-                                                'assets/${addImg[index]}')),
+                                                bloc.cart[index].img)),
                                       ),
                                     ],
                                   ),
-                                  Text(addText[index].toString()),
+                                  Text(bloc.cart[index].title),
+                                  Text(bloc.cart[index].price.toString()),
+                                  GestureDetector(
+                                    onTap: () {
+                                      context
+                                          .read<My_cartL>()
+                                          .remove(bloc.cart[index]);
+                                    },
+                                    child: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
+                                  )
 
                                   // Icon(Icons.delete_outline,color: Colors.red,)
                                 ],
@@ -136,10 +147,10 @@ class _My_CartState extends State<My_Cart> {
               ),
               Container(
                 child: Text(
-                  "Total ${total}",
+                  "Total ${bloc.totalprice}",
                   style: TextStyle(color: Colors.white),
                 ),
-              )
+              ),
             ],
           ),
         ),

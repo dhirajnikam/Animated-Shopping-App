@@ -1,8 +1,10 @@
 import 'package:a/cart/my_cart.dart';
-import 'package:a/list/list.dart';
+import 'package:a/data/list.dart';
+import 'package:a/models/cart.dart';
 import 'package:a/page_Animation/page_Animation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({Key? key}) : super(key: key);
@@ -16,26 +18,21 @@ class _ListPageState extends State<ListPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fav;
-    col;
-    addcol;
-    addImg;
-    img;
-    t_Text;
+    product;
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    col;
-    addcol;
+    product;
   }
 
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
+    var bloc = Provider.of<My_cartL>(context);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -57,7 +54,7 @@ class _ListPageState extends State<ListPage> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Cart ${addcol.length}",
+                            "Cart ${bloc.count}",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -74,15 +71,15 @@ class _ListPageState extends State<ListPage> {
                           child: ListView.builder(
                               reverse: true,
                               scrollDirection: Axis.horizontal,
-                              itemCount: addcol.length,
+                              itemCount: bloc.count,
                               itemBuilder: ((context, index) => Container(
                                     margin: EdgeInsets.only(right: 10),
                                     child: CircleAvatar(
                                       maxRadius: 25,
-                                      backgroundColor: addcol[index],
+                                      backgroundColor: bloc.cart[index].color,
                                       child: Image(
-                                          image: AssetImage(
-                                              "assets/${addImg[index]}")),
+                                          image:
+                                              AssetImage(bloc.cart[index].img)),
                                     ),
                                   ))),
                         ),
@@ -90,8 +87,9 @@ class _ListPageState extends State<ListPage> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: (){
-                            Navigator.of(context).push(MyCustomAnimatedRoute(enterWidget: My_Cart()));
+                          onTap: () {
+                            Navigator.of(context).push(
+                                MyCustomAnimatedRoute(enterWidget: My_Cart()));
                           },
                           child: Container(
                             height: 50,
@@ -118,14 +116,14 @@ class _ListPageState extends State<ListPage> {
               decoration: BoxDecoration(
                   color: Colors.grey.shade50,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: addcol.isEmpty
+                    bottomLeft: bloc.count == 0
                         ? Radius.circular(0)
                         : Radius.circular(40),
-                    bottomRight: addcol.isEmpty
+                    bottomRight: bloc.count == 0
                         ? Radius.circular(0)
                         : Radius.circular(40),
                   )),
-              height: addcol.isEmpty ? _height : _height * 0.9,
+              height: bloc.count == 0 ? _height : _height * 0.9,
               width: _width,
               duration: Duration(milliseconds: 500),
               child: Padding(
@@ -161,9 +159,8 @@ class _ListPageState extends State<ListPage> {
                             //         Border.all(width: 5, color: Colors.white),
                             //     color: Colors.black),
                             child: Icon(
-                              Icons.search_rounded,
-                            
-                            ))
+                          Icons.search_rounded,
+                        ))
                       ],
                     ),
                     SizedBox(
@@ -174,7 +171,7 @@ class _ListPageState extends State<ListPage> {
                         removeTop: true,
                         context: context,
                         child: GridView.builder(
-                            itemCount: col.length,
+                            itemCount: product.length,
                             gridDelegate:
                                 const SliverGridDelegateWithMaxCrossAxisExtent(
                                     maxCrossAxisExtent: 200,
@@ -196,6 +193,8 @@ class _ListPageState extends State<ListPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Row(
                                           mainAxisAlignment:
@@ -204,7 +203,8 @@ class _ListPageState extends State<ListPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  fav[index] = !fav[index];
+                                                  product[index].fav =
+                                                      !product[index].fav;
                                                 });
                                               },
                                               child: AnimatedCrossFade(
@@ -214,7 +214,8 @@ class _ListPageState extends State<ListPage> {
                                                   Icons.favorite,
                                                   color: Colors.red,
                                                 ),
-                                                crossFadeState: fav[index]
+                                                crossFadeState: product[index]
+                                                        .fav
                                                     ? CrossFadeState.showFirst
                                                     : CrossFadeState.showSecond,
                                                 duration:
@@ -223,24 +224,33 @@ class _ListPageState extends State<ListPage> {
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                _addItem(index);
+                                                Provider.of<My_cartL>(context, listen: false).add(product[index]);
                                               },
                                               child: Icon(
                                                   Icons.shopping_bag_outlined),
                                             )
                                           ],
                                         ),
-                                        Container(
-                                          child: Image(
-                                              image: AssetImage(
-                                                  "assets/${img[index]}")),
+                                        Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                              height: 100,
+                                              width: 100,
+                                              color: product[index].color,
+                                            ),
+                                            Container(
+                                              child: Image(
+                                                  image: AssetImage(
+                                                      product[index].img)),
+                                            ),
+                                          ],
                                         ),
-                                        Container(
-                                          child: CircleAvatar(
-                                            backgroundColor: col[index],
-                                          ),
-                                        ),
-                                        Text(t_Text[index])
+                                        Text(product[index].title),
+                                        Text(
+                                          "Price: ${product[index].price.toString()}",
+                                          style: TextStyle(color: Colors.amber),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -259,19 +269,20 @@ class _ListPageState extends State<ListPage> {
 
   _removeItem(index) {
     setState(() {
-      addcol.remove(addcol[index]);
+      //  addcol.remove(addcol[index]);
     });
   }
 
   _addItem(index) {
-    if (addcol.contains(col[index])) {
-      print("Already available ${col[index]}");
-    } else {
-      setState(() {
-        addcol.add(col[index]);
-        addImg.add(img[index]);
-        addText.add(double.parse(t_Text[index]));
-      });
-    }
+    Provider.of<My_cartL>(context, listen: false).cart.add(product[index]);
+    // if (addcol.contains(col[index])) {
+    //   print("Already available ${col[index]}");
+    // } else {
+    //   setState(() {
+    //     addcol.add(col[index]);
+    //     addImg.add(img[index]);
+    //     addText.add(double.parse(t_Text[index]));
+    //   });
+    // }
   }
 }
